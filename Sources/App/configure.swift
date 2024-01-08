@@ -24,16 +24,18 @@ public func configure(_ app: Application) async throws {
     
     
     let corsConfiguration = CORSMiddleware.Configuration(
-        allowedOrigin: .all,
-        allowedMethods: [.GET, .POST, .PUT, .OPTIONS, .DELETE, .PATCH],
-        allowedHeaders: [.accept, .authorization, .contentType, .origin, .xRequestedWith, .userAgent, .accessControlAllowOrigin]
-    )
-    let cors = CORSMiddleware(configuration: corsConfiguration)
-    // cors middleware should come before default error middleware using `at: .beginning`
-    app.middleware.use(cors, at: .beginning)
+         allowedOrigin: .custom("http://localhost:5173"), // Replace with your frontend origin
+         allowedMethods: [.GET, .POST, .PUT, .OPTIONS, .DELETE, .PATCH],
+         allowedHeaders: [.accept, .authorization, .contentType, .origin, .xRequestedWith, .userAgent, .accessControlAllowOrigin],
+         allowCredentials: true // Allow credentials (session cookies)
+     )
+     let cors = CORSMiddleware(configuration: corsConfiguration)
+     app.middleware.use(cors, at: .beginning)
     
     
     app.middleware.use(app.sessions.middleware)
     
     app.sessions.use(.memory)
+    
+
 }

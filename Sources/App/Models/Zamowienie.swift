@@ -15,7 +15,7 @@ final class Zamowienie: Model, Content {
     var id: UUID?
     
     @Field(key: "klientid")
-    var nazwa: UUID
+    var klientId: UUID
     
     @Field(key: "produktid")
     var productid: UUID
@@ -28,9 +28,9 @@ final class Zamowienie: Model, Content {
     
     init(){}
     
-    init(id: UUID? = nil, nazwa: UUID, productid: UUID, cenazakupu: Decimal, datazamowienia: Date) {
+    init(id: UUID? = nil, klientId: UUID, productid: UUID, cenazakupu: Decimal, datazamowienia: Date) {
         self.id = id
-        self.nazwa = nazwa
+        self.klientId = klientId
         self.productid = productid
         self.cenazakupu = cenazakupu
         self.datazamowienia = datazamowienia

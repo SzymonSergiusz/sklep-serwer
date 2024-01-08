@@ -32,7 +32,7 @@ struct UserController: RouteCollection {
         
         if let postgres = req.db as? PostgresDatabase {
             _ = postgres
-                .simpleQuery("SELECT dodajpracownika('\(klient.imie)', '\(klient.nazwisko)', '\(user.login)', '\(user.haslo)', '\(user.email)')")
+                .simpleQuery("SELECT dodajklienta('\(klient.imie)', '\(klient.nazwisko)', '\(user.login)', '\(user.haslo)', '\(user.email)')")
         } else {
             return .badRequest
         }

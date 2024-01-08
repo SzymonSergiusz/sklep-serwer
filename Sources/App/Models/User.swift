@@ -23,8 +23,8 @@ final class User: Model, Content {
     @Field(key: "email")
     var email: String
     
-//    @Field(key: "klientid")
-//    var klientId: UUID
+    @Field(key: "klientid")
+    var klientId: UUID
     
     @Field(key: "uprawnienia")
     var uprawnienia: String
@@ -42,7 +42,7 @@ final class User: Model, Content {
         self.login = login
         self.haslo = haslo
         self.email = email
-//        self.klientId = klientId
+        self.klientId = klientId
         self.uprawnienia = uprawnienia
     }
     
