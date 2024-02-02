@@ -1,6 +1,6 @@
 //
-//  File.swift
-//  
+//  SessionController.swift
+//
 //
 //  Created by Szymon Kluska on 07/01/2024.
 //
@@ -9,6 +9,7 @@ import Vapor
 import Fluent
 
 struct SessionController: RouteCollection {
+    
     func boot(routes: Vapor.RoutesBuilder) throws {
         
         let passwordProtected = routes.grouped(User.authenticator())
@@ -22,8 +23,6 @@ struct SessionController: RouteCollection {
                 "id": user.id?.uuidString ?? "",
                 "uprawnienia": user.uprawnienia
             ]
-
-            
             return responseData
         }
         
@@ -34,53 +33,41 @@ struct SessionController: RouteCollection {
             return .ok
         }
         
-        passwordProtected.get("test-logowania") { req -> String in
-            
-            return "udało się"
-        }
-        
-        passwordProtected.get("admin") { req -> String in
-            
-            if (req.session.data["uprawnienia"] == "pracownik") {
-                return "witam admina"
-            } else {
-                return "brak uprawnień"
-
-            }
-}
-        
         passwordProtected.group("user", "orders") { pass in
             pass.get(use: getOrders)
             pass.post(use: makeOrder)
             
         }
         
-        
+        passwordProtected.post("addProduct") { req -> HTTPStatus in
+            
+            if (req.session.data["uprawnienia"] == "pracownik") {
+                let produkt = try req.content.decode(Produkt.self)
+                try await produkt.save(on: req.db)
+                return .ok
+            } else {
+                return .badGateway
+            }
+        }
         
         func getOrders(req: Request) async throws -> [Zamowienie] {
             guard let clientIdString = req.session.data["clientId"],
                   let clientId = UUID(clientIdString) else {
                 throw Abort(.unauthorized)
             }
-            print(clientIdString)
-
-
             let orders = try await Zamowienie.query(on: req.db)
                 .filter(\.$klientId == clientId)
                 .all()
-
             return orders
         }
 
         
         func makeOrder(req: Request) async throws -> HTTPStatus {
-            // Retrieve clientId from the session
             guard let clientIdString = req.session.data["clientId"],
                   let clientId = UUID(clientIdString) else {
                 throw Abort(.unauthorized)
             }
 
-            // Decode the request body to get productId
             struct ProductIdOnly: Content {
                 let id: String
             }
@@ -90,35 +77,27 @@ struct SessionController: RouteCollection {
                 throw Abort(.badRequest)
             }
 
-            // Fetch the product details
             guard let product = try await Produkt.query(on: req.db)
                     .filter(\.$id == productId)
                     .first() else {
                 throw Abort(.notFound)
             }
 
-            // Extract the price (cena) from the product
             let cena = product.cena
 
-            // Create a new order instance
             let newOrder = Zamowienie(klientId: clientId,
                                       productid: productId,
                                       cenazakupu: cena,
-                                      datazamowienia: Date()) // Use Date() for the current date
+                                      datazamowienia: Date())
 
-            // Save the new order to the database
             do {
                 try await newOrder.save(on: req.db)
-                return .ok // Return success status if order saved successfully
+                return .ok
             } catch {
-                throw Abort(.internalServerError, reason: "Failed to save the order: \(error)")
+                throw Abort(.internalServerError, reason: "Błąd: \(error)")
             }
         }
-
-        
         
         
     }
-    
-    
 }

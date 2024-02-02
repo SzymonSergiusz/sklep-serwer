@@ -19,22 +19,18 @@ public func configure(_ app: Application) async throws {
 
     app.migrations.add(ProduktyMigration())
 
-    // register routes
     try routes(app)
     
     
     let corsConfiguration = CORSMiddleware.Configuration(
-         allowedOrigin: .custom("http://localhost:5173"), // Replace with your frontend origin
+         allowedOrigin: .custom("http://localhost:5173"),
          allowedMethods: [.GET, .POST, .PUT, .OPTIONS, .DELETE, .PATCH],
          allowedHeaders: [.accept, .authorization, .contentType, .origin, .xRequestedWith, .userAgent, .accessControlAllowOrigin],
-         allowCredentials: true // Allow credentials (session cookies)
+         allowCredentials: true
      )
-     let cors = CORSMiddleware(configuration: corsConfiguration)
-     app.middleware.use(cors, at: .beginning)
-    
-    
+    let cors = CORSMiddleware(configuration: corsConfiguration)
+    app.middleware.use(cors, at: .beginning)
     app.middleware.use(app.sessions.middleware)
-    
     app.sessions.use(.memory)
     
 

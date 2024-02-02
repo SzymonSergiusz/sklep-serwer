@@ -18,7 +18,23 @@ struct ProduktyController: RouteCollection {
     }
 
     func index(req: Request) async throws -> [Produkt] {
-        try await Produkt.query(on: req.db).all()
+        do {
+            if let search: String = try req.query.get(at: "szukane") {
+                print(search)
+                let produkty = try await Produkt.query(on: req.db)
+                    .filter(\.$nazwa, .custom("ILIKE"), "%\(search)%")
+                    .all()
+                return produkty
+            } else {
+                return try await Produkt.query(on: req.db).all()
+            }
+        } catch {
+            throw Abort(.badRequest, reason: "Error: \(error)")
+        }
+    }
+
+        
+
     }
 
     func getRandomFive(req: Request) async throws -> [Produkt] {
@@ -61,4 +77,3 @@ struct ProduktyController: RouteCollection {
           try await produkt.delete(on: req.db)
           return .ok
     }
-}

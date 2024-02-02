@@ -5,16 +5,16 @@ import FluentPostgresDriver
 struct UserController: RouteCollection {
     func boot(routes: RoutesBuilder) throws {
         let uzytkownicy = routes.grouped("users")
-        uzytkownicy.get(use: index)
+//        uzytkownicy.get(use: index)
         uzytkownicy.post(use: create)
     }
 
-    func index(req: Request) async throws -> [User] {
-        try await User.query(on: req.db).all()
-    }
-    
+//    func index(req: Request) async throws -> [User] {
+//        try await User.query(on: req.db).all()
+//    }
+//    
     func create(req: Request) async throws -> HTTPStatus {
-       
+        
         let klient = try req.content.decode(Klient.self)
 
         try User.Create.validate(content: req)
@@ -29,7 +29,6 @@ struct UserController: RouteCollection {
                 email: create.email
             )
         
-        
         if let postgres = req.db as? PostgresDatabase {
             _ = postgres
                 .simpleQuery("SELECT dodajklienta('\(klient.imie)', '\(klient.nazwisko)', '\(user.login)', '\(user.haslo)', '\(user.email)')")
@@ -38,7 +37,6 @@ struct UserController: RouteCollection {
         }
         return .ok
     }
-
 }
 
 

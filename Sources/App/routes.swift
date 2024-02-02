@@ -3,13 +3,6 @@ import Vapor
 
 func routes(_ app: Application) throws {
     
-    app.get { req async in
-        req.redirect(to: "/home")
-    }
-
-    app.get("home") { req async -> String in
-        "Hello, world!"
-    }
 
     app.get("gatunki") { req -> EventLoopFuture<[Gatunek]> in
         return Gatunek.query(on: req.db).all()
@@ -19,9 +12,6 @@ func routes(_ app: Application) throws {
         return Platforma.query(on: req.db).all()
     }
     
-    
-    
-    //test wysyłania obrazów
     app.get("images", ":imageName") { req -> EventLoopFuture<Response> in
         guard var imageName = req.parameters.get("imageName") else {
             throw Abort(.badRequest)
@@ -45,11 +35,5 @@ func routes(_ app: Application) throws {
     try app.register(collection: UserController())
     try app.register(collection: ZamowieniaController())
     try app.register(collection: SessionController())
-
-    //costam
-    //cos ininefi
-    
-
-      
 }
              

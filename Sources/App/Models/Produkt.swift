@@ -32,9 +32,7 @@ final class Produkt: Model, Content {
     @Field(key: "ilosc")
     var ilosc: Int
     
-
     init() { }
-    
     init(id: UUID? = nil, nazwa: String, opis: String, cena: Decimal, wydawcaid: UUID, gatunekid: UUID, platformaid: UUID, datawydania: Date, ilosc: Int) {
         self.id = id
         self.nazwa = nazwa
@@ -48,3 +46,4 @@ final class Produkt: Model, Content {
     }
     
 }
+

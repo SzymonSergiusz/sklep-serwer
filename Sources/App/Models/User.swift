@@ -33,7 +33,6 @@ final class User: Model, Content {
     init() {}
     init(id: UUID? = nil, email: String, haslo: String) {
         self.email = email
-
         self.haslo = haslo
 
     }
@@ -54,21 +53,16 @@ final class User: Model, Content {
 //        self.klientId = klientId
 //        self.uprawnienia = uprawnienia
     }
-    
-
-    
 }
 
 extension User: ModelAuthenticatable {
-    
     static let usernameKey = \User.$email
     static let passwordHashKey = \User.$haslo
-    
     func verify(password: String) throws -> Bool {
         try Bcrypt.verify(password, created: self.haslo)
     }
-    
 }
+
 extension User {
     struct Create: Content {
         var login: String
@@ -85,3 +79,5 @@ extension User.Create: Validatable {
         validations.add("haslo", as: String.self, is: .count(3...))
     }
 }
+
+

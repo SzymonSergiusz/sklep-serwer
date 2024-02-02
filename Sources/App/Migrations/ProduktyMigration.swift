@@ -25,6 +25,5 @@ struct ProduktyMigration : Migration {
     func revert(on database: FluentKit.Database) -> NIOCore.EventLoopFuture<Void> {
         return database.schema("produkty").delete()
     }
-    
-    
 }
+
